@@ -23,6 +23,8 @@ uv run pywrangler dev
 
 ### 部署到 Cloudflare
 
+**本地 CLI（推荐先验证）：**
+
 ```bash
 # 登录（首次）
 uv run pywrangler login
@@ -30,6 +32,18 @@ uv run pywrangler login
 # 部署
 uv run pywrangler deploy
 ```
+
+**Git 连接自动部署（Workers Builds）：**
+
+本项目是 **Workers**，不是 Pages。在 Worker → **Settings → Builds** 中配置：
+
+| 设置 | 值 |
+|------|-----|
+| Build command | **留空**（本项目无前端构建步骤） |
+| Deploy command | `uv run pywrangler deploy` |
+| Non-production deploy | `uv run pywrangler versions upload` |
+
+若 Build command 写成 `uv run build`，会报 `Failed to spawn: build`（仓库里没有名为 `build` 的命令）。不要用 Pages 的「输出目录」流程部署本项目。
 
 可选：设置访问令牌（部署后在 Dashboard 或 CLI 配置 Secret）：
 

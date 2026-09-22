@@ -9,6 +9,7 @@ from workers import Request, Response, fetch
 from headers_util import (
     is_forwardable_request_header,
     is_forwardable_response_header,
+    iter_headers,
 )
 from target import TargetError, assert_host_allowed, resolve_target
 
@@ -43,33 +44,6 @@ def _header_get(headers, name: str) -> str | None:
     return str(value)
 
 
-def _iter_headers(headers):
-    """Yield (name, value) pairs from JS Headers or a mapping."""
-    try:
-        for name, value in headers:
-            yield str(name), str(value)
-        return
-    except TypeError:
-        pass
-
-    try:
-        iterator = headers.entries()
-        while True:
-            nxt = iterator.next()
-            if nxt.done:
-                break
-            yield str(nxt.value[0]), str(nxt.value[1])
-        return
-    except Exception:
-        pass
-
-    try:
-        for name in headers.keys():
-            yield str(name), str(headers.get(name))
-    except Exception:
-        return
-
-
 def check_gateway_auth(request, env) -> Response | None:
     token = _env_str(env, "GATEWAY_TOKEN", "")
     if not token:
@@ -91,7 +65,7 @@ def check_gateway_auth(request, env) -> Response | None:
 
 def _collect_forward_request_headers(request, strip_authorization: bool) -> dict[str, str]:
     out: dict[str, str] = {}
-    for name, value in _iter_headers(request.headers):
+    for name, value in iter_headers(request.headers):
         lower = name.lower()
         if not is_forwardable_request_header(name):
             continue
@@ -104,7 +78,7 @@ def _collect_forward_request_headers(request, strip_authorization: bool) -> dict
 
 def _collect_forward_response_headers(upstream, origin: str | None) -> list[tuple[str, str]]:
     out: list[tuple[str, str]] = []
-    for name, value in _iter_headers(upstream.headers):
+    for name, value in iter_headers(upstream.headers):
         if is_forwardable_response_header(name):
             out.append((name, value))
     out.append(("X-Gateway", "gateway-deliver"))
