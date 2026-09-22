@@ -1,0 +1,4 @@
+# Local secrets for `uv run pywrangler dev`
+# Copy to .dev.vars and fill in values (do not commit .dev.vars)
+
+# GATEWAY_TOKEN=dev-secret

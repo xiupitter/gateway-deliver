@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+.venv-workers/
+venv/
+.python-version
+src/vendor/
+
+# Cloudflare / Node
+node_modules/
+.wrangler/
+.dev.vars
+dist/
+
+# IDE / OS
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db
